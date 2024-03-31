@@ -7,6 +7,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../database/user.entity';
 import { UserService } from './service/user.service';
 import { UserController } from './controllers/user.controller';
+import { Pns } from '../database/pns.entity';
+import { PnsService } from './service/pns.service';
+import { PnsController } from './controllers/pns.controller';
 
 @Module({
   imports: [
@@ -17,12 +20,18 @@ import { UserController } from './controllers/user.controller';
       username: 'admin',
       password: 'admin',
       database: 'bitmosys_db',
-      entities: [User],
+      entities: [User, Pns], 
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Pns]), 
   ],
-  providers: [UserService],
-  controllers: [UserController],
+  providers: [
+    UserService,
+    PnsService, 
+  ],
+  controllers: [
+    UserController,
+    PnsController, 
+  ],
 })
 export class AppModule {}
