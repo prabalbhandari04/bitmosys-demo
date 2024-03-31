@@ -18,10 +18,5 @@ export class PnsController {
     return this.pnsService.getAllPns();
   }
 
-  @Delete(':id')
-  async deletePnsById(@Param('id') id: string) {
-    await this.pnsService.deletePnsById(parseInt(id, 10));
-    return { message: 'PNS entry deleted successfully' };
-  }
 
 }
