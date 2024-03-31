@@ -10,9 +10,15 @@ import { UserController } from './controllers/user.controller';
 import { Pns } from '../database/pns.entity';
 import { PnsService } from './service/pns.service';
 import { PnsController } from './controllers/pns.controller';
+import { Booking } from '../database/booking.entity';
+import { BookingService } from './service/booking.service';
+import { BookingController } from './controllers/booking.controller';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -20,18 +26,22 @@ import { PnsController } from './controllers/pns.controller';
       username: 'admin',
       password: 'admin',
       database: 'bitmosys_db',
-      entities: [User, Pns], 
+      entities: [User, Pns, Booking], 
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User, Pns]), 
-  ],
-  providers: [
-    UserService,
-    PnsService, 
+    TypeOrmModule.forFeature([User, Pns, Booking]), 
   ],
   controllers: [
+    AppController,
     UserController,
-    PnsController, 
+    PnsController,
+    BookingController
+  ],
+  providers: [
+    AppService,
+    UserService,
+    PnsService,
+    BookingService,
   ],
 })
 export class AppModule {}
