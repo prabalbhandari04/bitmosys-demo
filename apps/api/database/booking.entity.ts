@@ -23,4 +23,7 @@ export class Booking {
 
   @CreateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
   CreatedOn: Date;
+
+  @Column({ default: 0 })
+  status: number;
 }
