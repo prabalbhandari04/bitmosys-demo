@@ -15,13 +15,10 @@ export class Pns {
   @Column()
   type: string;
 
-  @Column()
-  hourlyRate: number;
-
-  @Column()
-  vat: number;
-
   @ManyToOne(() => User) 
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column({ default: 0 })
+  status: number;
 }
