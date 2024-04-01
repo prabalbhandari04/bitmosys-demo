@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException  } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository , FindOneOptions} from 'typeorm';
-import { Booking } from '../../database/booking.entity';
+import { Repository } from 'typeorm';
 import { Pns } from '../../database/pns.entity';
 import { User } from '../../database/user.entity';
-
+import { NotFoundException } from '@nestjs/common'; 
+import { FindOneOptions } from 'typeorm';
+import { Booking } from '../../database/booking.entity';
 @Injectable()
 export class BookingService {
   constructor(
@@ -45,14 +46,5 @@ export class BookingService {
     return this.bookingRepository.find();
   }
 
-  async deleteBookingById(id: number): Promise<void> {
-    const booking = await this.bookingRepository.findOne({ where: { id } } as FindOneOptions<Booking>);
-  
-    if (!booking) {
-      throw new NotFoundException('PNS entry not found');
-    }
-    await this.bookingRepository.remove(booking);
-  }
-  
   
 }

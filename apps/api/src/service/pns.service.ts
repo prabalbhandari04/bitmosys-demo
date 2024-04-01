@@ -33,8 +33,6 @@ export class PnsService {
     pns.serviceCode = serviceCode;
     pns.serviceName = serviceName;
     pns.type = type;
-    pns.hourlyRate = hourlyRate;
-    pns.vat = vat;
     pns.user = await this.userRepository.findOne({ where: { id: userId } });
     if (!userId) {
       throw new NotFoundException('User not found');
@@ -43,16 +41,23 @@ export class PnsService {
   }
 
   async getAllPns(): Promise<Pns[]> {
-    return this.pnsRepository.find();
+    return this.pnsRepository.find({ where: { status: 0 } });
   }
 
-  async deletePnsById(id: number): Promise<void> {
+  async deletePnsById(id: number): Promise<string> {
     const pns = await this.pnsRepository.findOne({ where: { id } });
 
     if (!pns) {
-      throw new NotFoundException('PNS entry not found');
+      throw new NotFoundException('Pns entry not found');
     }
+
     await this.pnsRepository.remove(pns);
+
+    // Set status to 1 after deletion
+    pns.status = 1;
+    await this.pnsRepository.save(pns);
+
+    return 'Pns deleted';
   }
 
 }

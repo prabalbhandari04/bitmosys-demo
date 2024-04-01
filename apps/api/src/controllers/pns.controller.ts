@@ -18,5 +18,9 @@ export class PnsController {
     return this.pnsService.getAllPns();
   }
 
+  @Delete(':id')
+  deletePnsById(@Param('id') id: number) {
+    return this.pnsService.deletePnsById(id);
+  }
 
 }
