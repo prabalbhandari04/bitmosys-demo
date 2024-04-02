@@ -21,5 +21,4 @@ export class BookingController {
     return this.bookingService.getAllBooking();
   }
 
-
 }
