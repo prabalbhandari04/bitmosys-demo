@@ -43,7 +43,11 @@ export class BookingService {
   }
 
   async getAllBooking(): Promise<Booking[]> {
-    return this.bookingRepository.find();
+    return this.bookingRepository.createQueryBuilder('booking')
+    .leftJoinAndSelect('booking.User', 'user')
+      .leftJoinAndSelect('booking.PNS', 'pns')
+      .where('booking.status = :status', { status: 0 })
+      .getMany();
   }
 
   

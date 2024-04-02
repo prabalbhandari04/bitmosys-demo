@@ -7,10 +7,10 @@ export class PnsController {
 
   @Post()
   async createPns(
-    @Body() { serviceCode, serviceName, type, hourlyRate, vat, userId }: 
-    { serviceCode: number; serviceName: string; type: string; hourlyRate: number; vat: number; userId: number; }
+    @Body() { serviceCode, serviceName, type,  userId }: 
+    { serviceCode: number; serviceName: string; type: string;  userId: number; }
   ) {
-    return this.pnsService.createPns(serviceCode, serviceName, type, hourlyRate, vat, userId);
+    return this.pnsService.createPns(serviceCode, serviceName, type,userId);
   }
 
   @Get()

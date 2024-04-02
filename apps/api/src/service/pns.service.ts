@@ -15,33 +15,42 @@ export class PnsService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+
   async createPns(
     serviceCode: number,
     serviceName: string,
     type: string,
-    hourlyRate: number,
-    vat: number,
     userId: number,
   ): Promise<Pns> {
-    // Validate service code
+    // Check if service code already exists
     const existingPns = await this.pnsRepository.findOne({ where: { serviceCode } });
     if (existingPns) {
-      throw new Error('Service code already exists');
+      throw new Error('Service with this code already exists');
     }
-
+  
+    // Validate user existence
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    // Create new Pns entry
     const pns = new Pns();
     pns.serviceCode = serviceCode;
     pns.serviceName = serviceName;
     pns.type = type;
-    pns.user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!userId) {
-      throw new NotFoundException('User not found');
-    }
+    pns.user = user;
+  
     return this.pnsRepository.save(pns);
   }
 
+  
+
   async getAllPns(): Promise<Pns[]> {
-    return this.pnsRepository.find({ where: { status: 0 } });
+    return this.pnsRepository.createQueryBuilder('pns')
+      .leftJoinAndSelect('pns.user', 'user')
+      .where('pns.status = :status', { status: 0 })
+      .getMany();
   }
 
   async deletePnsById(id: number): Promise<string> {

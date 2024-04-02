@@ -13,6 +13,9 @@ import { PnsController } from './controllers/pns.controller';
 import { Booking } from '../database/booking.entity';
 import { BookingService } from './service/booking.service';
 import { BookingController } from './controllers/booking.controller';
+import { Rate } from '../database/rate.entity'; // Corrected path
+import { RateController } from './controllers/rate.controller';
+import { RateService } from './service/rate.service';
 
 @Module({
   imports: [
@@ -26,22 +29,24 @@ import { BookingController } from './controllers/booking.controller';
       username: 'admin',
       password: 'admin',
       database: 'bitmosys_db',
-      entities: [User, Pns, Booking], 
+      entities: [User, Pns, Booking, Rate], // Included Rate entity
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User, Pns, Booking]), 
+    TypeOrmModule.forFeature([User, Pns, Booking, Rate]) // Included Rate entity
   ],
   controllers: [
     AppController,
     UserController,
     PnsController,
-    BookingController
+    BookingController,
+    RateController // Included RateController
   ],
   providers: [
     AppService,
     UserService,
     PnsService,
     BookingService,
+    RateService // Included RateService
   ],
 })
 export class AppModule {}
