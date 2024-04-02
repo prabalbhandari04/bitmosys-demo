@@ -4,17 +4,18 @@ import { Pns } from './pns.entity';
 @Entity()
 export class Rate {
   @PrimaryGeneratedColumn()
-  rateId: number;
+  id: number;
 
   @Column()
-  hourlyRate: number;
-
-  @Column()
-  vat: number;
-
-  @ManyToOne(() => Pns) 
-  @JoinColumn({ name: 'serviceId' })
-  pns: Pns;
+    hourlyRate: number;
+  
+    @Column()
+    vat: number;
+  
+    @ManyToOne(() => Pns) 
+    @JoinColumn({ name: 'pns_id' })
+    pns: Pns;
+  
 
   @Column({ default: 0 })
   status: number;
