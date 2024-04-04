@@ -16,5 +16,9 @@
   },
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "dependencies": {
+    "@fluentui/react": "^8.117.1",
+    "@fluentui/react-components": "^9.47.2"
+  }
 }
