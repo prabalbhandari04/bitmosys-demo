@@ -15,6 +15,8 @@ import {
   Dismiss24Regular,
 } from "@fluentui/react-icons";
 import { TableSortPNS } from './TablePNS';
+
+
 const useStyles = makeStyles({
   wrapper: {
     columnGap: "15px",
@@ -133,6 +135,21 @@ export const CreateBookingForm = () => {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    serviceCode: selectedOption ? selectedOption.pns.serviceCode : '',
+    serviceName: selectedOption ? selectedOption.pns.serviceName : '',
+    serviceType: selectedOption ? selectedOption.pns.type : '',
+    rate: selectedOption ? selectedOption.hourlyRate : '',
+    vat: selectedOption ? selectedOption.vat : ''
+  });
+
+  const handleInputChangePNS = (event) => {
+    const { id, value } = event.target;
+    setFormData({
+      ...formData,
+      [id]: value
+    });
+  };
 
   const handleCreatePNSClick = () => {
     setIsDrawerOpen(true);
@@ -342,7 +359,115 @@ export const CreateBookingForm = () => {
         </DrawerHeader>
        
         <DrawerBody>
+            
+            
           <TableSortPNS />
+
+
+          <div>
+  <h3>Select user :</h3>
+  <div className="dropdown-filter">
+    <div className="dropdown" style={{ position: 'relative', width: '100%' }}>
+      <TextField
+        type="text"
+        value={inputValue}
+        onChange={handleInputChange}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        style={{ paddingRight: '30px', width: '500px' }} // Adjust padding to accommodate the cross
+      />
+      {inputValue && (
+        <button
+          className="reset-button"
+          onClick={resetInput}
+          style={{ 
+            position: 'absolute', 
+            right: '5px', 
+            top: '50%', 
+            transform: 'translateY(-50%)',
+            color: 'black' // Change cross button color to black
+          }} 
+        >
+          &#10005;
+        </button>
+      )}
+      {isOpen && (
+        <DropdownContent style={{ width: '100%', marginTop: '5px' }}>
+          {filteredOptions.map((option, index) => (
+            <DropdownOption
+              key={index}
+              onClick={() => handleOptionClick(option)}
+            >
+              {`${option.pns.serviceCode} - ${option.pns.serviceName} - ${option.pns.type} - ${option.hourlyRate}`}
+            </DropdownOption>
+          ))}
+        </DropdownContent>
+      )}
+    </div>
+  </div>
+</div>
+
+
+<div>
+<form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '10px' }}>
+        <div style={{ marginRight: '10px' }}>
+          <Label htmlFor="serviceCode">Service Code:</Label>
+          <Input
+            type="text"
+            id="serviceCode"
+            value={formData.serviceCode}
+            onChange={handleInputChangePNS}
+          />
+        </div>
+        <div>
+          <Label htmlFor="serviceName">Service Name:</Label>
+          <Input
+            type="text"
+            id="serviceName"
+            value={formData.serviceName}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '10px' }}>
+        <div style={{ marginRight: '10px' }}>
+          <Label htmlFor="serviceType">Service Type:</Label>
+          <Input
+            type="text"
+            id="serviceType"
+            value={formData.serviceType}
+            onChange={handleInputChangePNS}
+          />
+        </div>
+        <div style={{ marginLeft: '10px' }}>
+          <Label htmlFor="rate">Rate:</Label>
+          <Input
+            type="number"
+            id="rate"
+            value={formData.rate}
+            onChange={handleInputChangePNS}
+          />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '10px' }}>
+        <div style={{ marginRight: '10px' }}>
+          <Label htmlFor="vat">VAT:</Label>
+          <Input
+            type="text"
+            id="vat"
+            value={formData.vat}
+            onChange={handleInputChangePNS}
+          />
+        </div>
+      </div>
+
+      <button type="submit" style={{ marginTop: '10px' }}>Submit</button>
+    </form>
+</div>
+
         </DrawerBody>
       </OverlayDrawer>
     </div>

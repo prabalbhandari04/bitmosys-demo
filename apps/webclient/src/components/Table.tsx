@@ -1,16 +1,5 @@
 import * as React from "react";
 import {
-  FolderRegular,
-  EditRegular,
-  OpenRegular,
-  DocumentRegular,
-  PeopleRegular,
-  DocumentPdfRegular,
-  VideoRegular,
-} from "@fluentui/react-icons";
-import {
-  PresenceBadgeStatus,
-  Avatar,
   TableBody,
   TableCell,
   TableRow,
@@ -18,102 +7,80 @@ import {
   TableHeader,
   TableHeaderCell,
   useTableFeatures,
-  TableColumnDefinition,
-  TableColumnId,
   useTableSort,
-  TableCellLayout,
+  TableColumnDefinition,
   createTableColumn,
 } from "@fluentui/react-components";
 
-type FileCell = {
-  label: string;
-  icon: JSX.Element;
-};
-
-type LastUpdatedCell = {
-  label: string;
-  timestamp: number;
-};
-
-type LastUpdateCell = {
-  label: string;
-  icon: JSX.Element;
-};
-
-type AuthorCell = {
-  label: string;
-  status: PresenceBadgeStatus;
+type Service = {
+  serviceName: string;
+  type: string;
+  startDatetime: Date;
+  endDatetime: Date;
 };
 
 type Item = {
-  file: FileCell;
-  author: AuthorCell;
-  lastUpdated: LastUpdatedCell;
-  lastUpdate: LastUpdateCell;
+  service: Service;
 };
 
 const items: Item[] = [
   {
-    file: { label: "Meeting notes", icon: <DocumentRegular /> },
-    author: { label: "Max Mustermann", status: "available" },
-    lastUpdated: { label: "7h ago", timestamp: 3 },
-    lastUpdate: {
-      label: "You edited this",
-      icon: <EditRegular />,
+    service: {
+      serviceName: "Meeting notes",
+      type: "Document",
+      startDatetime: new Date(),
+      endDatetime: new Date(),
     },
   },
   {
-    file: { label: "Thursday presentation", icon: <FolderRegular /> },
-    author: { label: "Erika Mustermann", status: "busy" },
-    lastUpdated: { label: "Yesterday at 1:45 PM", timestamp: 2 },
-    lastUpdate: {
-      label: "You recently opened this",
-      icon: <OpenRegular />,
+    service: {
+      serviceName: "Thursday presentation",
+      type: "Folder",
+      startDatetime: new Date(),
+      endDatetime: new Date(),
     },
   },
   {
-    file: { label: "Training recording", icon: <VideoRegular /> },
-    author: { label: "John Doe", status: "away" },
-    lastUpdated: { label: "Yesterday at 1:45 PM", timestamp: 2 },
-    lastUpdate: {
-      label: "You recently opened this",
-      icon: <OpenRegular />,
+    service: {
+      serviceName: "Training recording",
+      type: "Video",
+      startDatetime: new Date(),
+      endDatetime: new Date(),
     },
   },
   {
-    file: { label: "Purchase order", icon: <DocumentPdfRegular /> },
-    author: { label: "Jane Doe", status: "offline" },
-    lastUpdated: { label: "Tue at 9:30 AM", timestamp: 1 },
-    lastUpdate: {
-      label: "You shared this in a Teams chat",
-      icon: <PeopleRegular />,
+    service: {
+      serviceName: "Purchase order",
+      type: "PDF Document",
+      startDatetime: new Date(),
+      endDatetime: new Date(),
     },
   },
 ];
 
 const columns: TableColumnDefinition<Item>[] = [
   createTableColumn<Item>({
-    columnId: "file",
+    columnId: "serviceName",
     compare: (a, b) => {
-      return a.file.label.localeCompare(b.file.label);
+      return a.service.serviceName.localeCompare(b.service.serviceName);
     },
   }),
   createTableColumn<Item>({
-    columnId: "author",
+    columnId: "type",
     compare: (a, b) => {
-      return a.author.label.localeCompare(b.author.label);
+      return a.service.type.localeCompare(b.service.type);
     },
   }),
   createTableColumn<Item>({
-    columnId: "lastUpdated",
+    columnId: "startDatetime",
     compare: (a, b) => {
-      return a.lastUpdated.timestamp - b.lastUpdated.timestamp;
+      return a.service.startDatetime.getTime() - b.service.startDatetime.getTime();
     },
   }),
   createTableColumn<Item>({
-    columnId: "lastUpdate",
+    columnId: "endDatetime",
     compare: (a, b) => {
-      return a.lastUpdate.label.localeCompare(b.lastUpdate.label);
+      return a.service.endDatetime.getTime() - b.service.endDatetime.getTime();
     },
   }),
 ];
@@ -121,10 +88,10 @@ const columns: TableColumnDefinition<Item>[] = [
 export const TableSort = () => {
   const [sortState, setSortState] = React.useState<{
     sortDirection: "ascending" | "descending";
-    sortColumn: TableColumnId | undefined;
+    sortColumn: string | undefined;
   }>({
-    sortDirection: "ascending" as const,
-    sortColumn: "file",
+    sortDirection: "ascending",
+    sortColumn: "serviceName",
   });
 
   const {
@@ -143,7 +110,7 @@ export const TableSort = () => {
     ]
   );
 
-  const headerSortProps = (columnId: TableColumnId) => ({
+  const headerSortProps = (columnId: string) => ({
     onClick: (e: React.MouseEvent) => toggleColumnSort(e, columnId),
     sortDirection: getSortDirection(columnId),
   });
@@ -151,50 +118,22 @@ export const TableSort = () => {
   const rows = sort(getRows());
 
   return (
-    <Table sortable aria-label="Table with controlled sort">
+    <Table sortable aria-label="Sortable table">
       <TableHeader>
         <TableRow>
-          <TableHeaderCell {...headerSortProps("file")}>File</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("author")}>
-            Author
-          </TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("lastUpdated")}>
-            Last updated
-          </TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("lastUpdate")}>
-            Last update
-          </TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("serviceName")}>Service Name</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("type")}>Type</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("startDatetime")}>Start Datetime</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("endDatetime")}>End Datetime</TableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map(({ item }) => (
-          <TableRow key={item.file.label}>
-            <TableCell>
-              <TableCellLayout media={item.file.icon}>
-                {item.file.label}
-              </TableCellLayout>
-            </TableCell>
-            <TableCell>
-              <TableCellLayout
-                media={
-                  <Avatar
-                    aria-label={item.author.label}
-                    name={item.author.label}
-                    badge={{
-                      status: item.author.status as PresenceBadgeStatus,
-                    }}
-                  />
-                }
-              >
-                {item.author.label}
-              </TableCellLayout>
-            </TableCell>
-            <TableCell>{item.lastUpdated.label}</TableCell>
-            <TableCell>
-              <TableCellLayout media={item.lastUpdate.icon}>
-                {item.lastUpdate.label}
-              </TableCellLayout>
-            </TableCell>
+        {rows.map(({ item }, index) => (
+          <TableRow key={index}>
+            <TableCell>{item.service.serviceName}</TableCell>
+            <TableCell>{item.service.type}</TableCell>
+            <TableCell>{item.service.startDatetime.toString()}</TableCell>
+            <TableCell>{item.service.endDatetime.toString()}</TableCell>
           </TableRow>
         ))}
       </TableBody>
