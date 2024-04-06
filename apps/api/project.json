@@ -1,0 +1,24 @@
+{
+  "name": "bitmosys-monorepo-demo",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/bitmosys-monorepo-demo/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "bitmosys-monorepo-demo:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "bitmosys-monorepo-demo:build:development"
+        },
+        "production": {
+          "buildTarget": "bitmosys-monorepo-demo:build:production"
+        }
+      }
+    }
+  }
+}
