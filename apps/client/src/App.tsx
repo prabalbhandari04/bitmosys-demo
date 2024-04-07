@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack } from "@fluentui/react";
 import { Header } from "./components/Header";
-import {TableSort} from "./components/Table";
+import { TableSort } from "./components/Table";
 import { ButtonBooking } from "./components/Button";
-import { PnsDrawer } from "./components/pnsDrawer";
+
 function App() {
+
   return (
     <>
-        <Stack>
-      <Header />
       <Stack>
-      <ButtonBooking />
+        <Header />
+        <Stack>
+          <ButtonBooking />
+        </Stack>
+        <TableSort />
       </Stack>
-      <TableSort />
-    </Stack>
     </>
   );
 }
