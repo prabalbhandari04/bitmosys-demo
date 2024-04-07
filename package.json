@@ -16,9 +16,6 @@
     "tslib": "^2.3.0",
     "typeorm": "^0.3.20"
   },
-  "scripts": {
-    "start": "node dist/apps/client/src/main.ts"
-  },
   "devDependencies": {
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
