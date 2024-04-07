@@ -1,4 +1,5 @@
-import * as React from "react";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   TableBody,
   TableCell,
@@ -11,101 +12,83 @@ import {
   TableColumnDefinition,
   createTableColumn,
 } from "@fluentui/react-components";
+import { fetchBookings } from '../redux/bookingSlice';
 
-type Service = {
-  serviceName: string;
-  type: string;
-  startDatetime: Date;
-  endDatetime: Date;
+type Booking = {
+  BookingId: number;
+  StartDatetime: string;
+  EndDatetime: string;
+  ServiceCode: string; // New column: service code
+  ServiceName: string; // New column: service name
+  ServiceType: string; // New column: service type
 };
 
-type Item = {
-  service: Service;
-};
-
-const items: Item[] = [
-  {
-    service: {
-      serviceName: "Meeting notes",
-      type: "Document",
-      startDatetime: new Date(),
-      endDatetime: new Date(),
-    },
-  },
-  {
-    service: {
-      serviceName: "Thursday presentation",
-      type: "Folder",
-      startDatetime: new Date(),
-      endDatetime: new Date(),
-    },
-  },
-  {
-    service: {
-      serviceName: "Training recording",
-      type: "Video",
-      startDatetime: new Date(),
-      endDatetime: new Date(),
-    },
-  },
-  {
-    service: {
-      serviceName: "Purchase order",
-      type: "PDF Document",
-      startDatetime: new Date(),
-      endDatetime: new Date(),
-    },
-  },
-];
-
-const columns: TableColumnDefinition<Item>[] = [
-  createTableColumn<Item>({
-    columnId: "serviceName",
-    compare: (a, b) => {
-      return a.service.serviceName.localeCompare(b.service.serviceName);
-    },
-  }),
-  createTableColumn<Item>({
-    columnId: "type",
-    compare: (a, b) => {
-      return a.service.type.localeCompare(b.service.type);
-    },
-  }),
-  createTableColumn<Item>({
-    columnId: "startDatetime",
-    compare: (a, b) => {
-      return a.service.startDatetime.getTime() - b.service.startDatetime.getTime();
-    },
-  }),
-  createTableColumn<Item>({
-    columnId: "endDatetime",
-    compare: (a, b) => {
-      return a.service.endDatetime.getTime() - b.service.endDatetime.getTime();
-    },
-  }),
-];
-
-export const TableSort = () => {
-  const [sortState, setSortState] = React.useState<{
+export const TableSort: React.FC = () => {
+  const dispatch = useDispatch();
+  const bookings = useSelector((state: any) => state.bookings.bookings);
+  const [sortedBookings, setSortedBookings] = useState<Booking[]>([]);
+  console.log(sortedBookings)
+  const [sortState, setSortState] = useState<{
     sortDirection: "ascending" | "descending";
     sortColumn: string | undefined;
   }>({
     sortDirection: "ascending",
-    sortColumn: "serviceName",
+    sortColumn: "StartDatetime",
   });
+
+  useEffect(() => {
+    dispatch(fetchBookings());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setSortedBookings(bookings);
+  }, [bookings]);
+
+  const columns: TableColumnDefinition<Booking>[] = [
+    createTableColumn<Booking>({
+      columnId: "StartDatetime",
+      header: "Start Datetime",
+      cell: (item) => new Date(item.StartDatetime).toLocaleString(),
+      compare: (a, b) => new Date(a.StartDatetime).getTime() - new Date(b.StartDatetime).getTime(),
+    }),
+    createTableColumn<Booking>({
+      columnId: "EndDatetime",
+      header: "End Datetime",
+      cell: (item) => new Date(item.EndDatetime).toLocaleString(),
+      compare: (a, b) => new Date(a.EndDatetime).getTime() - new Date(b.EndDatetime).getTime(),
+    }),
+    createTableColumn<Booking>({
+      columnId: "ServiceCode", // New column: service code
+      header: "Service Code",
+      cell: (item) => item.ServiceCode,
+      compare: (a, b) => a.ServiceCode.localeCompare(b.ServiceCode),
+    }),
+    createTableColumn<Booking>({
+      columnId: "ServiceName", // New column: service name
+      header: "Service Name",
+      cell: (item) => item.ServiceName,
+      compare: (a, b) => a.ServiceName.localeCompare(b.ServiceName),
+    }),
+    createTableColumn<Booking>({
+      columnId: "ServiceType", // New column: service type
+      header: "Service Type",
+      cell: (item) => item.ServiceType,
+      compare: (a, b) => a.ServiceType.localeCompare(b.ServiceType),
+    }),
+  ];
 
   const {
     getRows,
-    sort: { getSortDirection, toggleColumnSort, sort },
+    sort: { getSortDirection, toggleColumnSort },
   } = useTableFeatures(
     {
       columns,
-      items,
+      items: sortedBookings,
     },
     [
       useTableSort({
         sortState,
-        onSortChange: (e, nextSortState) => setSortState(nextSortState),
+        onSortChange: (_, nextSortState) => setSortState(nextSortState),
       }),
     ]
   );
@@ -115,28 +98,26 @@ export const TableSort = () => {
     sortDirection: getSortDirection(columnId),
   });
 
-  const rows = sort(getRows());
-
   return (
     <Table sortable aria-label="Sortable table">
       <TableHeader>
         <TableRow>
-          <TableHeaderCell {...headerSortProps("serviceName")}>Service Name</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("type")}>Type</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("startDatetime")}>Start Datetime</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("endDatetime")}>End Datetime</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("StartDatetime")}>Start Datetime</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("EndDatetime")}>End Datetime</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("ServiceCode")}>Service Code</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("ServiceName")}>Service Name</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("ServiceType")}>Service Type</TableHeaderCell>
         </TableRow>
       </TableHeader>
-      <TableBody>
-        {rows.map(({ item }, index) => (
-          <TableRow key={index}>
-            <TableCell>{item.service.serviceName}</TableCell>
-            <TableCell>{item.service.type}</TableCell>
-            <TableCell>{item.service.startDatetime.toString()}</TableCell>
-            <TableCell>{item.service.endDatetime.toString()}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
+      {sortedBookings.map((booking, index) => (
+        <TableRow key={index}>
+          <TableCell>{new Date(booking.StartDatetime).toLocaleString()}</TableCell>
+          <TableCell>{new Date(booking.EndDatetime).toLocaleString()}</TableCell>
+          <TableCell>{booking.PNS.serviceCode}</TableCell>
+          <TableCell>{booking.PNS.serviceName}</TableCell>
+          <TableCell>{booking.PNS.type}</TableCell>
+        </TableRow>
+      ))}
     </Table>
   );
 };

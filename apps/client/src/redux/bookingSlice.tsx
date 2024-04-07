@@ -8,7 +8,6 @@ const initialState = {
   status: 'idle',
   error: null,
 };
-
 export const fetchBookings = createAsyncThunk('bookings/fetchBookings', async () => {
   const response = await axios.get('http://localhost:3000/api/booking');
   return response.data;
