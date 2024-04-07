@@ -12,9 +12,6 @@ export class Pns {
   @Column()
   serviceName: string;
 
-  @Column()
-  type: string;
-
   @ManyToOne(() => User) 
   @JoinColumn({ name: 'user_id' })
   user: User;

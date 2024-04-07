@@ -6,12 +6,17 @@ export class Rate {
   @PrimaryGeneratedColumn()
   id: number;
 
+  
+  @Column()
+  name: string;
+
   @Column()
     hourlyRate: number;
   
     @Column()
     vat: number;
-  
+
+    
     @ManyToOne(() => Pns) 
     @JoinColumn({ name: 'pns_id' })
     pns: Pns;

@@ -20,6 +20,7 @@ export class RateService {
 
   async createRate(
     pnsId: number,
+    name : string,
     hourlyRate: number,
     vat: number,
   ): Promise<Rate> {
@@ -29,6 +30,7 @@ export class RateService {
     }
   
     const rate = new Rate();
+    rate.name = name;
     rate.hourlyRate = hourlyRate;
     rate.vat = vat;
     rate.pns = pns;

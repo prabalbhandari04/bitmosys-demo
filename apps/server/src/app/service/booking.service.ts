@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Pns } from 'libs/database/pns.entity';
+import { Rate } from 'libs/database/rate.entity';
 import { User } from 'libs/database/user.entity';
 import { NotFoundException } from '@nestjs/common'; 
 import { FindOneOptions } from 'typeorm';
@@ -9,8 +9,8 @@ import { Booking } from 'libs/database/booking.entity';
 @Injectable()
 export class BookingService {
   constructor(
-    @InjectRepository(Pns)
-    private readonly pnsRepository: Repository<Pns>, 
+    @InjectRepository(Rate)
+    private readonly rateRepository: Repository<Rate>, 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Booking)
@@ -19,7 +19,7 @@ export class BookingService {
 
   async createBooking(
     userId: number,
-    pnsId: number,
+    rateId: number,
     startDatetime: Date,
     endDatetime: Date,
   ): Promise<Booking> {
@@ -28,14 +28,14 @@ export class BookingService {
       throw new NotFoundException('User not found');
     }
 
-    const pns = await this.pnsRepository.findOne({ where: { id: pnsId } });
-    if (!pns) {
+    const rate = await this.rateRepository.findOne({ where: { id: rateId } });
+    if (!rate) {
       throw new NotFoundException('Pns not found');
     }
 
     const booking = new Booking();
     booking.User = user;
-    booking.PNS = pns;
+    booking.Rate = rate;
     booking.StartDatetime = startDatetime;
     booking.EndDatetime = endDatetime;
     
@@ -45,7 +45,7 @@ export class BookingService {
   async getAllBooking(): Promise<Booking[]> {
     return this.bookingRepository.createQueryBuilder('booking')
     .leftJoinAndSelect('booking.User', 'user')
-      .leftJoinAndSelect('booking.PNS', 'pns')
+      .leftJoinAndSelect('booking.Rate', 'rate')
       .where('booking.status = :status', { status: 0 })
       .getMany();
   }

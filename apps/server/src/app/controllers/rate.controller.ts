@@ -7,10 +7,10 @@ export class RateController {
 
   @Post()
   async createRate(
-    @Body() { pnsId, hourlyRate, vat }: 
-    { pnsId: number; hourlyRate: number; vat: number }
+    @Body() { pnsId, name,hourlyRate, vat }: 
+    { pnsId: number; name:string; hourlyRate: number; vat: number }
   ) {
-    return this.rateService.createRate(pnsId, hourlyRate, vat);
+    return this.rateService.createRate(pnsId, name,hourlyRate, vat);
   }
 
   @Get()

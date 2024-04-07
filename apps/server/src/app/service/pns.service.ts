@@ -19,7 +19,6 @@ export class PnsService {
   async createPns(
     serviceCode: number,
     serviceName: string,
-    type: string,
     userId: number,
   ): Promise<Pns> {
     // Check if service code already exists
@@ -38,7 +37,6 @@ export class PnsService {
     const pns = new Pns();
     pns.serviceCode = serviceCode;
     pns.serviceName = serviceName;
-    pns.type = type;
     pns.user = user;
   
     return this.pnsRepository.save(pns);
