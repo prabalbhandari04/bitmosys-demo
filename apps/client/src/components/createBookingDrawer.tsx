@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, OverlayDrawer, DrawerBody, DrawerHeader, DrawerHeaderTitle } from "@fluentui/react-components";
 import { Dismiss24Regular } from "@fluentui/react-icons";
-import { fetchRates } from '../redux/rateSlice'; // Import fetchRates action from rateSlice
+import { fetchRates } from '../redux/rateSlice';
+import { createBooking } from '../redux/bookingSlice';
 
 const FormContainer = styled.div`
   display: flex;
@@ -40,7 +41,7 @@ const DropdownOption = styled.div`
 `;
 
 const TextField = styled.input`
-  padding-right: 30px; /* Add space for the cross button */
+  padding-right: 30px;
 `;
 
 export const CreateBookingDrawer = () => {
@@ -58,13 +59,11 @@ export const CreateBookingDrawer = () => {
     vat: ''
   });
 
-  // Redux integration
   const rates = useSelector((state) => state.rates.rates);
   const status = useSelector((state) => state.rates.status);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Fetch rates when component mounts
     dispatch(fetchRates());
   }, [dispatch]);
 
@@ -100,17 +99,27 @@ export const CreateBookingDrawer = () => {
     setSelectedOption(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmitBooking = (e) => {
     e.preventDefault();
-    if (selectedOption) {
-      console.log('Start Time:', startTime);
-      console.log('End Time:', endTime);
-      console.log('Selected Service:', selectedOption);
+    if (selectedOption && startTime && endTime) {
+      console.log(selectedOption.id)
+      const bookingData = {
+        userId: 4,
+        rateId: selectedOption.id,
+        startDatetime: startTime,
+        endDatetime: endTime
+      };
+
+      dispatch(createBooking(bookingData));
+
+      setInputValue('');
+      setSelectedOption(null);
+      setStartTime('');
+      setEndTime('');
     } else {
-      console.log('Please select a service.');
+      console.log('Please select a service and provide start and end time.');
     }
   };
-
 
   const handleStartTimeChange = (e) => {
     setStartTime(e.target.value);
@@ -124,58 +133,57 @@ export const CreateBookingDrawer = () => {
 
   return (
     <div>
-     
-      <div> <h3>Select One Product & Services :</h3>
-      <div className="dropdown-filter">
-        <div className="dropdown" style={{ position: 'relative', width: '100%' }}>
-          <TextField
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            onFocus={() => setIsOpen(true)}
-            onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-            style={{ paddingRight: '30px', width: '500px' }} // Adjust padding to accommodate the cross
-          />
-          {inputValue && (
-            <button
-              className="reset-button"
-              onClick={resetInput}
-              style={{ 
-                position: 'absolute', 
-                right: '5px', 
-                top: '50%', 
-                transform: 'translateY(-50%)',
-                color: 'black' // Change cross button color to black
-              }} 
-            >
-              &#10005;
-            </button>
-          )}
-          {isOpen && (
-            <DropdownContent style={{ width: '100%', marginTop: '5px' }}>
-              {/* Show filtered options with create button */}
-              {filteredOptions.length > 0 ? (
-                <>
+      <div>
+        <h3>Select One Product & Services :</h3>
+        <div className="dropdown-filter">
+          <div className="dropdown" style={{ position: 'relative', width: '100%' }}>
+            <TextField
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              onFocus={() => setIsOpen(true)}
+              onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+              style={{ paddingRight: '30px', width: '500px' }}
+            />
+            {inputValue && (
+              <button
+                className="reset-button"
+                onClick={resetInput}
+                style={{ 
+                  position: 'absolute', 
+                  right: '5px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)',
+                  color: 'black'
+                }} 
+              >
+                &#10005;
+              </button>
+            )}
+            {isOpen && (
+              <DropdownContent style={{ width: '100%', marginTop: '5px' }}>
+                {filteredOptions.length > 0 ? (
+                  <>
+                    <DropdownOption onClick={handleCreatePNSClick} style={{ fontWeight: 'bold' }}>
+                      Create New Product & Services
+                    </DropdownOption>
+                    {filteredOptions.map((option, index) => (
+                      <DropdownOption key={index} onClick={() => handleOptionClick(option)}>
+                        {`${option.id} - ${option.pns.serviceCode} - ${option.pns.serviceName} - ${option.name} - ${option.hourlyRate}`}
+                      </DropdownOption>
+                    ))}
+                  </>
+                ) : (
                   <DropdownOption onClick={handleCreatePNSClick} style={{ fontWeight: 'bold' }}>
                     Create New Product & Services
                   </DropdownOption>
-                  {filteredOptions.map((option, index) => (
-                    <DropdownOption key={index} onClick={() => handleOptionClick(option)}>
-                      {`${option.pns.serviceCode} - ${option.pns.serviceName} - ${option.name} - ${option.hourlyRate}`}
-                    </DropdownOption>
-                  ))}
-                </>
-              ) : (
-                <DropdownOption onClick={handleCreatePNSClick} style={{ fontWeight: 'bold' }}>
-                  Create New Product & Services
-                </DropdownOption>
-              )}
-            </DropdownContent>
-          )}
+                )}
+              </DropdownContent>
+            )}
+          </div>
         </div>
-      </div>
-      <div>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' , marginTop: '20px' }}>
+        <div>
+          <form onSubmit={handleSubmitBooking} style={{ display: 'flex', flexDirection: 'column' , marginTop: '20px' }}>
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
               <div style={{ marginRight: '10px' }}>
                 <Label htmlFor="startTime">Start Time (Date and Time):</Label>
@@ -198,10 +206,9 @@ export const CreateBookingDrawer = () => {
             </div>
             <button type="submit" style={{ marginTop: '10px' }}>Submit</button>
           </form>
-      </div>
+        </div>
       </div>
 
-      {/* OverlayDrawer for creating new product */}
       <OverlayDrawer
         modalType="non-modal"
         open={isDrawerOpen}
@@ -226,7 +233,7 @@ export const CreateBookingDrawer = () => {
        
         <DrawerBody>
           <FormContainer>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
+            <form onSubmit={handleSubmitBooking} style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '10px' }}>
                 <div style={{ marginRight: '10px' }}>
                   <Label htmlFor="serviceCode">Service Code:</Label>

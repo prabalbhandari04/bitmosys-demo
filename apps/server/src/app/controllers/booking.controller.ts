@@ -7,13 +7,13 @@ export class BookingController {
 
   @Post()
   async createBooking(
-    @Body() { userId , pnsId , startDatetime, endDatetime }: 
+    @Body() { userId , rateId , startDatetime, endDatetime }: 
     {  userId: number,
-        pnsId: number,
+        rateId: number,
         startDatetime: Date,
         endDatetime: Date, }
   ) {
-    return this.bookingService.createBooking(userId , pnsId , startDatetime, endDatetime );
+    return this.bookingService.createBooking(userId , rateId , startDatetime, endDatetime );
   }
 
   @Get()
