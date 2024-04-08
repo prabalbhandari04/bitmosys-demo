@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, OverlayDrawer, DrawerBody, DrawerHeader, DrawerHeaderTitle } from "@fluentui/react-components";
 import { Dismiss24Regular } from "@fluentui/react-icons";
-import { fetchRates } from '../redux/rateSlice';
+import { fetchRates , createRate} from '../redux/rateSlice';
 import { createBooking } from '../redux/bookingSlice';
-
+import { fetchPns, createPns } from '../redux/pnsSlice';
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -121,6 +121,31 @@ export const CreateBookingDrawer = () => {
     }
   };
 
+  const handleSubmitPns = (e) => {
+    e.preventDefault();
+    
+    // Check if required form data is available
+    if (formData.serviceType && formData.rate && formData.vat) {
+      const rateData = {
+        pnsId: 10,
+        name: formData.serviceType,
+        hourlyRate: formData.rate,
+        vat: formData.vat
+      };
+      const pnsData = {
+        userId: 3,
+        serviceCode: formData.serviceCode,
+        serviceName: formData.serviceName
+      }
+      dispatch(createPns(pnsData));
+      dispatch(createRate(rateData));
+      setInputValue('');
+    } else {
+      console.log('Please fill in all required fields.');
+    }
+  };
+  
+
   const handleStartTimeChange = (e) => {
     setStartTime(e.target.value);
   };
@@ -233,7 +258,7 @@ export const CreateBookingDrawer = () => {
        
         <DrawerBody>
           <FormContainer>
-            <form onSubmit={handleSubmitBooking} style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
+            <form onSubmit={handleSubmitPns} style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '10px' }}>
                 <div style={{ marginRight: '10px' }}>
                   <Label htmlFor="serviceCode">Service Code:</Label>

@@ -24,6 +24,19 @@ export const fetchRates = createAsyncThunk('rates/fetchRates', async () => {
   }
 });
 
+// Create an async thunk to add a rate through an API
+export const createRate = createAsyncThunk('rates/createRate', async (rateData) => {
+  try {
+    // Send a POST request to add rate
+    const response = await axios.post('http://localhost:3000/api/rate', rateData);
+    // Return the data received from the API
+    return response.data;
+  } catch (error) {
+    // If there's an error during creation, throw the error
+    throw error;
+  }
+});
+
 // Create a slice for managing rates state
 const rateSlice = createSlice({
   name: 'rates',  // Name of the slice
@@ -45,6 +58,23 @@ const rateSlice = createSlice({
       })
       // Action dispatched when fetching rates encounters an error
       .addCase(fetchRates.rejected, (state, action) => {
+        // Set status to 'failed' and update error value with the error message
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      // Action dispatched when creating a rate starts
+      .addCase(createRate.pending, (state) => {
+        // Set status to 'loading'
+        state.status = 'loading';
+      })
+      // Action dispatched when creating a rate successfully completes
+      .addCase(createRate.fulfilled, (state, action) => {
+        // Set status to 'succeeded' and update rates array with the newly created rate
+        state.status = 'succeeded';
+        state.rates.push(action.payload);
+      })
+      // Action dispatched when creating a rate encounters an error
+      .addCase(createRate.rejected, (state, action) => {
         // Set status to 'failed' and update error value with the error message
         state.status = 'failed';
         state.error = action.error.message;
