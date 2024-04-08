@@ -27,7 +27,6 @@ export const TableSort: React.FC = () => {
   const dispatch = useDispatch();
   const bookings = useSelector((state: any) => state.bookings.bookings);
   const [sortedBookings, setSortedBookings] = useState<Booking[]>([]);
-  console.log(sortedBookings)
   const [sortState, setSortState] = useState<{
     sortDirection: "ascending" | "descending";
     sortColumn: string | undefined;
@@ -102,21 +101,19 @@ export const TableSort: React.FC = () => {
     <Table sortable aria-label="Sortable table">
       <TableHeader>
         <TableRow>
+        <TableHeaderCell {...headerSortProps("ServiceName")}>Service Name</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("ServiceType")}>Service Hourly Rate</TableHeaderCell>
           <TableHeaderCell {...headerSortProps("StartDatetime")}>Start Datetime</TableHeaderCell>
           <TableHeaderCell {...headerSortProps("EndDatetime")}>End Datetime</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("ServiceCode")}>Service Code</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("ServiceName")}>Service Name</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("ServiceType")}>Service Type</TableHeaderCell>
         </TableRow>
       </TableHeader>
       {sortedBookings.map((booking, index) => (
         <TableRow key={index}>
+          <TableCell>{booking.Rate.name}</TableCell>
+          <TableCell>{booking.Rate.hourlyRate}</TableCell>
           <TableCell>{new Date(booking.StartDatetime).toLocaleString()}</TableCell>
           <TableCell>{new Date(booking.EndDatetime).toLocaleString()}</TableCell>
-          <TableCell>{booking.PNS.serviceCode}</TableCell>
-          <TableCell>{booking.PNS.serviceName}</TableCell>
-          <TableCell>{booking.PNS.type}</TableCell>
-        </TableRow>
+         </TableRow>
       ))}
     </Table>
   );

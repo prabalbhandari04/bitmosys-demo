@@ -1,16 +1,6 @@
-import * as React from "react";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-  FolderRegular,
-  EditRegular,
-  OpenRegular,
-  DocumentRegular,
-  PeopleRegular,
-  DocumentPdfRegular,
-  VideoRegular,
-} from "@fluentui/react-icons";
-import {
-  PresenceBadgeStatus,
-  Avatar,
   TableBody,
   TableCell,
   TableRow,
@@ -18,186 +8,114 @@ import {
   TableHeader,
   TableHeaderCell,
   useTableFeatures,
-  TableColumnDefinition,
-  TableColumnId,
   useTableSort,
-  TableCellLayout,
+  TableColumnDefinition,
   createTableColumn,
 } from "@fluentui/react-components";
+import { fetchBookings } from '../redux/bookingSlice';
 
-type FileCell = {
-  label: string;
-  icon: JSX.Element;
+type Booking = {
+  BookingId: number;
+  StartDatetime: string;
+  EndDatetime: string;
+  ServiceCode: string; // New column: service code
+  ServiceName: string; // New column: service name
+  ServiceType: string; // New column: service type
 };
 
-type LastUpdatedCell = {
-  label: string;
-  timestamp: number;
-};
-
-type LastUpdateCell = {
-  label: string;
-  icon: JSX.Element;
-};
-
-type AuthorCell = {
-  label: string;
-  status: PresenceBadgeStatus;
-};
-
-type Item = {
-  file: FileCell;
-  author: AuthorCell;
-  lastUpdated: LastUpdatedCell;
-  lastUpdate: LastUpdateCell;
-};
-
-const items: Item[] = [
-  {
-    file: { label: "Meeting notes", icon: <DocumentRegular /> },
-    author: { label: "Max Mustermann", status: "available" },
-    lastUpdated: { label: "7h ago", timestamp: 3 },
-    lastUpdate: {
-      label: "You edited this",
-      icon: <EditRegular />,
-    },
-  },
-  {
-    file: { label: "Thursday presentation", icon: <FolderRegular /> },
-    author: { label: "Erika Mustermann", status: "busy" },
-    lastUpdated: { label: "Yesterday at 1:45 PM", timestamp: 2 },
-    lastUpdate: {
-      label: "You recently opened this",
-      icon: <OpenRegular />,
-    },
-  },
-  {
-    file: { label: "Training recording", icon: <VideoRegular /> },
-    author: { label: "John Doe", status: "away" },
-    lastUpdated: { label: "Yesterday at 1:45 PM", timestamp: 2 },
-    lastUpdate: {
-      label: "You recently opened this",
-      icon: <OpenRegular />,
-    },
-  },
-  {
-    file: { label: "Purchase order", icon: <DocumentPdfRegular /> },
-    author: { label: "Jane Doe", status: "offline" },
-    lastUpdated: { label: "Tue at 9:30 AM", timestamp: 1 },
-    lastUpdate: {
-      label: "You shared this in a Teams chat",
-      icon: <PeopleRegular />,
-    },
-  },
-];
-
-const columns: TableColumnDefinition<Item>[] = [
-  createTableColumn<Item>({
-    columnId: "file",
-    compare: (a, b) => {
-      return a.file.label.localeCompare(b.file.label);
-    },
-  }),
-  createTableColumn<Item>({
-    columnId: "author",
-    compare: (a, b) => {
-      return a.author.label.localeCompare(b.author.label);
-    },
-  }),
-  createTableColumn<Item>({
-    columnId: "lastUpdated",
-    compare: (a, b) => {
-      return a.lastUpdated.timestamp - b.lastUpdated.timestamp;
-    },
-  }),
-  createTableColumn<Item>({
-    columnId: "lastUpdate",
-    compare: (a, b) => {
-      return a.lastUpdate.label.localeCompare(b.lastUpdate.label);
-    },
-  }),
-];
-
-export const TableSortPNS = () => {
-  const [sortState, setSortState] = React.useState<{
+export const TableSortPns: React.FC = () => {
+  const dispatch = useDispatch();
+  const bookings = useSelector((state: any) => state.bookings.bookings);
+  const [sortedBookings, setSortedBookings] = useState<Booking[]>([]);
+  console.log(sortedBookings)
+  const [sortState, setSortState] = useState<{
     sortDirection: "ascending" | "descending";
-    sortColumn: TableColumnId | undefined;
+    sortColumn: string | undefined;
   }>({
-    sortDirection: "ascending" as const,
-    sortColumn: "file",
+    sortDirection: "ascending",
+    sortColumn: "StartDatetime",
   });
+
+  useEffect(() => {
+    dispatch(fetchBookings());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setSortedBookings(bookings);
+  }, [bookings]);
+
+  const columns: TableColumnDefinition<Booking>[] = [
+    createTableColumn<Booking>({
+      columnId: "StartDatetime",
+      header: "Start Datetime",
+      cell: (item) => new Date(item.StartDatetime).toLocaleString(),
+      compare: (a, b) => new Date(a.StartDatetime).getTime() - new Date(b.StartDatetime).getTime(),
+    }),
+    createTableColumn<Booking>({
+      columnId: "EndDatetime",
+      header: "End Datetime",
+      cell: (item) => new Date(item.EndDatetime).toLocaleString(),
+      compare: (a, b) => new Date(a.EndDatetime).getTime() - new Date(b.EndDatetime).getTime(),
+    }),
+    createTableColumn<Booking>({
+      columnId: "ServiceCode", // New column: service code
+      header: "Service Code",
+      cell: (item) => item.ServiceCode,
+      compare: (a, b) => a.ServiceCode.localeCompare(b.ServiceCode),
+    }),
+    createTableColumn<Booking>({
+      columnId: "ServiceName", // New column: service name
+      header: "Service Name",
+      cell: (item) => item.ServiceName,
+      compare: (a, b) => a.ServiceName.localeCompare(b.ServiceName),
+    }),
+    createTableColumn<Booking>({
+      columnId: "ServiceType", // New column: service type
+      header: "Service Type",
+      cell: (item) => item.ServiceType,
+      compare: (a, b) => a.ServiceType.localeCompare(b.ServiceType),
+    }),
+  ];
 
   const {
     getRows,
-    sort: { getSortDirection, toggleColumnSort, sort },
+    sort: { getSortDirection, toggleColumnSort },
   } = useTableFeatures(
     {
       columns,
-      items,
+      items: sortedBookings,
     },
     [
       useTableSort({
         sortState,
-        onSortChange: (e, nextSortState) => setSortState(nextSortState),
+        onSortChange: (_, nextSortState) => setSortState(nextSortState),
       }),
     ]
   );
 
-  const headerSortProps = (columnId: TableColumnId) => ({
+  const headerSortProps = (columnId: string) => ({
     onClick: (e: React.MouseEvent) => toggleColumnSort(e, columnId),
     sortDirection: getSortDirection(columnId),
   });
 
-  const rows = sort(getRows());
-
   return (
-    <Table sortable aria-label="Table with controlled sort">
+    <Table sortable aria-label="Sortable table">
       <TableHeader>
         <TableRow>
-          <TableHeaderCell {...headerSortProps("file")}>File</TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("author")}>
-            Author
-          </TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("lastUpdated")}>
-            Last updated
-          </TableHeaderCell>
-          <TableHeaderCell {...headerSortProps("lastUpdate")}>
-            Last update
-          </TableHeaderCell>
+        <TableHeaderCell {...headerSortProps("ServiceName")}>Service Code</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("ServiceType")}>Service Name</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("StartDatetime")}>Start Type</TableHeaderCell>
+          <TableHeaderCell {...headerSortProps("EndDatetime")}>Hourly Rate</TableHeaderCell>
         </TableRow>
       </TableHeader>
-      <TableBody>
-        {rows.map(({ item }) => (
-          <TableRow key={item.file.label}>
-            <TableCell>
-              <TableCellLayout media={item.file.icon}>
-                {item.file.label}
-              </TableCellLayout>
-            </TableCell>
-            <TableCell>
-              <TableCellLayout
-                media={
-                  <Avatar
-                    aria-label={item.author.label}
-                    name={item.author.label}
-                    badge={{
-                      status: item.author.status as PresenceBadgeStatus,
-                    }}
-                  />
-                }
-              >
-                {item.author.label}
-              </TableCellLayout>
-            </TableCell>
-            <TableCell>{item.lastUpdated.label}</TableCell>
-            <TableCell>
-              <TableCellLayout media={item.lastUpdate.icon}>
-                {item.lastUpdate.label}
-              </TableCellLayout>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
+      {sortedBookings.map((booking, index) => (
+        <TableRow key={index}>
+          <TableCell>{booking.Rate.name}</TableCell>
+          <TableCell>{booking.Rate.hourlyRate}</TableCell>
+          <TableCell>{new Date(booking.StartDatetime).toLocaleString()}</TableCell>
+          <TableCell>{new Date(booking.EndDatetime).toLocaleString()}</TableCell>
+         </TableRow>
+      ))}
     </Table>
   );
 };

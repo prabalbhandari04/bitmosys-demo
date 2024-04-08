@@ -29,7 +29,7 @@ export const Header: React.FunctionComponent = () => {
       }}
     >
       <Stack.Item grow={1} styles={{ root: { minWidth: 0 } }}>
-        <Link href="http://localhost:5173">
+        <Link href="/">
           <Stack horizontal wrap={false} verticalAlign="center">
             <Image src={framelogo} alt="product logo" />
             <Text
@@ -41,7 +41,7 @@ export const Header: React.FunctionComponent = () => {
                 },
               }}
             >
-              BITMOSYS_DEMO
+              Booking
             </Text>
           </Stack>
         </Link>
@@ -53,12 +53,19 @@ export const Header: React.FunctionComponent = () => {
           tokens={{ childrenGap: 10 }}
           styles={{ root: { minWidth: 0 } }}
         >
-          <Stack.Item>
-            <SearchBox
-              placeholder="Search"
-              onSearch={(newValue) => console.log("value is " + newValue)}
-            />
-          </Stack.Item>
+          <Link href="/product-and-services">
+            <Text
+              key="productAndService"
+              variant={"large"}
+              styles={{
+                root: {
+                  color: "white",
+                },
+              }}
+            >
+              Product and Service
+            </Text>
+          </Link>
         </Stack>
       </Stack.Item>
     </Stack>

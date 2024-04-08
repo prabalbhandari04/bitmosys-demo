@@ -1,21 +1,23 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Stack } from "@fluentui/react";
 import { Header } from "./components/Header";
-import { TableSort } from "./components/Table";
-import { ButtonBooking } from "./components/Button";
+import { Booking } from "./pages/booking";
+import { Pns } from "./pages/pns";
 
 function App() {
-
   return (
-    <>
+    <Router>
       <Stack>
         <Header />
         <Stack>
-          <ButtonBooking />
+          <Routes>
+            <Route path="/" element={<Booking />} />
+            <Route path="/product-and-services" element={<Pns />} />
+          </Routes>
         </Stack>
-        <TableSort />
       </Stack>
-    </>
+    </Router>
   );
 }
 
