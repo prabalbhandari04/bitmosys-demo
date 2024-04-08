@@ -41,7 +41,7 @@ export const Header: React.FunctionComponent = () => {
                 },
               }}
             >
-              Booking
+              Bitmosys-Demo
             </Text>
           </Stack>
         </Link>

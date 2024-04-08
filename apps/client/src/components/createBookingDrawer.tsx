@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, OverlayDrawer, DrawerBody, DrawerHeader, DrawerHeaderTitle } from "@fluentui/react-components";
 import { Dismiss24Regular } from "@fluentui/react-icons";
-import { fetchRates , createRate} from '../redux/rateSlice';
+import { fetchRates, createRate } from '../redux/rateSlice';
 import { createBooking } from '../redux/bookingSlice';
 import { fetchPns, createPns } from '../redux/pnsSlice';
+
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -26,18 +27,6 @@ const Input = styled.input`
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
-`;
-
-const DropdownContent = styled.div`
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-`;
-
-const DropdownOption = styled.div`
-  padding: 8px 16px;
-  cursor: pointer;
-  &:hover {
-    background-color: #f0f0f0;
-  }
 `;
 
 const TextField = styled.input`
@@ -67,6 +56,18 @@ export const CreateBookingDrawer = () => {
     dispatch(fetchRates());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (status === 'succeeded') {
+      // Close drawer after successful creation
+      // Update dropdown and select the recently created product and service
+      const newlyCreatedOption = rates.find(option => option.name === formData.serviceType);
+      if (newlyCreatedOption) {
+        setSelectedOption(newlyCreatedOption);
+        setInputValue(newlyCreatedOption.name);
+      }
+    }
+  }, [status, rates, formData.serviceType, dispatch]);
+
   const handleInputChangePNS = (event) => {
     const { id, value } = event.target;
     setFormData({
@@ -77,10 +78,6 @@ export const CreateBookingDrawer = () => {
 
   const handleCreatePNSClick = () => {
     setIsDrawerOpen(true);
-  };
-
-  const handleCloseDrawer = () => {
-    setIsDrawerOpen(false);
   };
 
   const handleInputChange = (e) => {
@@ -102,28 +99,29 @@ export const CreateBookingDrawer = () => {
   const handleSubmitBooking = (e) => {
     e.preventDefault();
     if (selectedOption && startTime && endTime) {
-      console.log(selectedOption.id)
       const bookingData = {
         userId: 4,
         rateId: selectedOption.id,
         startDatetime: startTime,
         endDatetime: endTime
       };
-
+  
       dispatch(createBooking(bookingData));
-
+  
       setInputValue('');
       setSelectedOption(null);
       setStartTime('');
       setEndTime('');
+      setIsDrawerOpen(false); // Close the drawer after successful booking
     } else {
       console.log('Please select a service and provide start and end time.');
     }
   };
+  
 
   const handleSubmitPns = (e) => {
     e.preventDefault();
-    
+
     // Check if required form data is available
     if (formData.serviceType && formData.rate && formData.vat) {
       const rateData = {
@@ -140,11 +138,12 @@ export const CreateBookingDrawer = () => {
       dispatch(createPns(pnsData));
       dispatch(createRate(rateData));
       setInputValue('');
+      setIsDrawerOpen(false); // Close the drawer upon successful submission
     } else {
       console.log('Please fill in all required fields.');
     }
   };
-  
+
 
   const handleStartTimeChange = (e) => {
     setStartTime(e.target.value);
@@ -174,41 +173,41 @@ export const CreateBookingDrawer = () => {
               <button
                 className="reset-button"
                 onClick={resetInput}
-                style={{ 
-                  position: 'absolute', 
-                  right: '5px', 
-                  top: '50%', 
+                style={{
+                  position: 'absolute',
+                  right: '5px',
+                  top: '50%',
                   transform: 'translateY(-50%)',
                   color: 'black'
-                }} 
+                }}
               >
                 &#10005;
               </button>
             )}
             {isOpen && (
-              <DropdownContent style={{ width: '100%', marginTop: '5px' }}>
+              <div style={{ width: '100%', marginTop: '5px' }}>
                 {filteredOptions.length > 0 ? (
                   <>
-                    <DropdownOption onClick={handleCreatePNSClick} style={{ fontWeight: 'bold' }}>
+                    <div onClick={handleCreatePNSClick} style={{ fontWeight: 'bold' }}>
                       Create New Product & Services
-                    </DropdownOption>
+                    </div>
                     {filteredOptions.map((option, index) => (
-                      <DropdownOption key={index} onClick={() => handleOptionClick(option)}>
+                      <div key={index} onClick={() => handleOptionClick(option)}>
                         {`${option.id} - ${option.pns.serviceCode} - ${option.pns.serviceName} - ${option.name} - ${option.hourlyRate}`}
-                      </DropdownOption>
+                      </div>
                     ))}
                   </>
                 ) : (
-                  <DropdownOption onClick={handleCreatePNSClick} style={{ fontWeight: 'bold' }}>
+                  <div onClick={handleCreatePNSClick} style={{ fontWeight: 'bold' }}>
                     Create New Product & Services
-                  </DropdownOption>
+                  </div>
                 )}
-              </DropdownContent>
+              </div>
             )}
           </div>
         </div>
         <div>
-          <form onSubmit={handleSubmitBooking} style={{ display: 'flex', flexDirection: 'column' , marginTop: '20px' }}>
+          <form onSubmit={handleSubmitBooking} style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
               <div style={{ marginRight: '10px' }}>
                 <Label htmlFor="startTime">Start Time (Date and Time):</Label>
@@ -237,7 +236,19 @@ export const CreateBookingDrawer = () => {
       <OverlayDrawer
         modalType="non-modal"
         open={isDrawerOpen}
-        onOpenChange={(event, { open }) => setIsDrawerOpen(open)}
+        onOpenChange={(event, { open }) => {
+          if (!open) {
+            // Reset form data before closing the drawer
+            setFormData({
+              serviceCode: '',
+              serviceName: '',
+              serviceType: '',
+              rate: '',
+              vat: ''
+            });
+          }
+          setIsDrawerOpen(open);
+        }}
         position="end"
         style={{ width: "600px" }}
       >
@@ -248,14 +259,14 @@ export const CreateBookingDrawer = () => {
                 appearance="subtle"
                 aria-label="Close"
                 icon={<Dismiss24Regular />}
-                onClick={handleCloseDrawer}
+                onClick={() => setIsDrawerOpen(false)}
               />
             }
           >
             Create New Product & Services
           </DrawerHeaderTitle>
         </DrawerHeader>
-       
+
         <DrawerBody>
           <FormContainer>
             <form onSubmit={handleSubmitPns} style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
@@ -279,7 +290,7 @@ export const CreateBookingDrawer = () => {
                   />
                 </div>
               </div>
-              
+
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '10px' }}>
                 <div style={{ marginRight: '10px' }}>
                   <Label htmlFor="serviceType">Service Type:</Label>
