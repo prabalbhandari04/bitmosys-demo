@@ -1,54 +1,126 @@
-// import * as React from "react";
-// import { Card, CardSection, CardHeader, CardPreview, Button } from "@fluentui/react-components";
-// import { ArrowReplyRegular, ShareRegular } from "@fluentui/react-icons";
-// import { makeStyles, shorthands } from "@fluentui/react-components";
-// import { DetailsList, DetailsListLayoutMode, IColumn } from "@fluentui/react-components";
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  makeStyles,
+  Body1,
+  Caption1,
+  Button,
+  shorthands,
+} from "@fluentui/react-components";
+import { ArrowReplyRegular, ShareRegular } from "@fluentui/react-icons";
+import {
+  Card,
+  CardFooter,
+  CardHeader,
+  CardPreview,
+} from "@fluentui/react-components";
+import { fetchRates, createRate } from "../redux/rateSlice";
 
-// const useStyles = makeStyles({
-//   card: {
-//     ...shorthands.margin("auto"),
-//     width: "720px",
-//     maxWidth: "100%",
-//   },
-// });
+// Import table components
+import {
+  FolderRegular,
+  EditRegular,
+  OpenRegular,
+  DocumentRegular,
+  PeopleRegular,
+  DocumentPdfRegular,
+  VideoRegular,
+  Avatar,
+  TableBody,
+  TableCell,
+  TableRow,
+  Table,
+  TableHeader,
+  TableHeaderCell,
+  TableCellLayout,
+} from "@fluentui/react-components";
 
-// const columns: IColumn[] = [
-//   { key: 'column1', name: 'Rate', fieldName: 'rate', minWidth: 100 },
-//   { key: 'column2', name: 'VAT', fieldName: 'vat', minWidth: 100 },
-// ];
+interface Rate {
+  id: number;
+  name: string;
+  hourlyRate: number;
+  vat: number;
+  status: number;
+  pns: {
+    id: number;
+    serviceCode: string;
+    serviceName: string;
+    status: number;
+  };
+}
 
-// const data = [
-//   { key: '1', rate: '$10', vat: '5%' },
-//   { key: '2', rate: '$20', vat: '10%' },
-//   { key: '3', rate: '$15', vat: '8%' },
-// ];
+const useStyles = makeStyles({
+  card: {
+    ...shorthands.margin("auto"),
+    width: "720px",
+    maxWidth: "100%",
+    marginTop : "20px;",
+    marginBottom: "20px",
+    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", 
+  },
+});
 
-// const ServiceCard = ({ serviceCode, serviceName }) => {
-//   const styles = useStyles();
+export const ServiceCard = () => {
+  const styles = useStyles();
+  const [groupedRates, setGroupedRates] = useState<Rate[][]>([]);
+  const rates = useSelector((state) => state.rates.rates);
+  const status = useSelector((state) => state.rates.status);
+  const dispatch = useDispatch();
 
-//   return (
-//     <Card className={styles.card}>
-//       <CardHeader
-//         header={<React.Fragment><b>Service Code:</b> {serviceCode}</React.Fragment>}
-//         description={<React.Fragment><b>Service Name:</b> {serviceName}</React.Fragment>}
-//       />
-//       <Card.Section>
-//         <CardPreview>
-//           <DetailsList
-//             items={data}
-//             columns={columns}
-//             layoutMode={DetailsListLayoutMode.justified}
-//           />
-//         </CardPreview>
-//       </Card.Section>
-//       <Card.Section>
-//         <CardFooter>
-//           <Button icon={<ArrowReplyRegular fontSize={16} />}>Reply</Button>
-//           <Button icon={<ShareRegular fontSize={16} />}>Share</Button>
-//         </CardFooter>
-//       </Card.Section>
-//     </Card>
-//   );
-// };
+  useEffect(() => {
+    dispatch(fetchRates());
+  }, [dispatch]);
 
-// export default ServiceCard;
+  useEffect(() => {
+    // Group rates by service code and name
+    const grouped = {};
+    rates.forEach((rate) => {
+      const key = `${rate.pns.serviceCode}-${rate.pns.serviceName}`;
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(rate);
+    });
+    setGroupedRates(Object.values(grouped));
+  }, [rates]);
+
+  return (
+    <div>
+      {groupedRates.map((group, index) => (
+        <Card key={index} className={styles.card}>
+          {group.map((rate: Rate, index: number) => (
+            <React.Fragment key={index}>
+              {index === 0 && (
+                <CardHeader
+                  header={<b>Service Code : {rate.pns.serviceCode}</b>}
+                  description={<Caption1>Service Name : {rate.pns.serviceName}</Caption1>}
+                />
+              )}
+              <Table size="extra-small" aria-label="Table with extra-small size">
+                {index === 0 && (
+                  <TableHeader>
+                    <TableRow>
+                      <TableHeaderCell>Name</TableHeaderCell>
+                      <TableHeaderCell>Hourly Rate</TableHeaderCell>
+                      <TableHeaderCell>Vat %</TableHeaderCell>
+                    </TableRow>
+                  </TableHeader>
+                )}
+                <TableBody>
+                  <TableRow>
+                    <TableCell>
+                      <TableCellLayout>{rate.name}</TableCellLayout>
+                    </TableCell>
+                    <TableCell>{rate.hourlyRate}</TableCell>
+                    <TableCell>{rate.vat}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </React.Fragment>
+          ))}
+        </Card>
+      ))}
+    </div>
+  );
+};
