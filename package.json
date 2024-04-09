@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run docker-start\" \"npm run server-start\" \"npm run client-start\"",
-    "server-start": "nx serve server --verbose",
+    "server-start": "nx serve server",
     "client-start": "nx serve client",
     "docker-start": "docker-compose up"
   },
