@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run server-start\" \"npm run client-start\"",
+    "server-start": "nx serve server",
+    "client-start": "nx serve client",
+    "docker-start": "docker-compose up"
+  },
   "dependencies": {
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
@@ -45,6 +51,7 @@
     "@typescript-eslint/parser": "^7.3.0",
     "@vitejs/plugin-react": "^4.2.1",
     "babel-plugin-styled-components": "1.10.7",
+    "concurrently": "^8.2.2",
     "eslint": "~8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "2.27.5",

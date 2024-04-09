@@ -100,7 +100,7 @@ export const CreateBookingDrawer = () => {
     e.preventDefault();
     if (selectedOption && startTime && endTime) {
       const bookingData = {
-        userId: 4,
+        userId: 1,
         rateId: selectedOption.id,
         startDatetime: startTime,
         endDatetime: endTime
@@ -125,13 +125,13 @@ export const CreateBookingDrawer = () => {
     // Check if required form data is available
     if (formData.serviceType && formData.rate && formData.vat) {
       const rateData = {
-        pnsId: 10,
+        pnsId: 1,
         name: formData.serviceType,
         hourlyRate: formData.rate,
         vat: formData.vat
       };
       const pnsData = {
-        userId: 3,
+        userId: 1,
         serviceCode: formData.serviceCode,
         serviceName: formData.serviceName
       }
