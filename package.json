@@ -5,10 +5,10 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run docker-start\" \"npm run server-start\" \"npm run client-start\"",
-    "server-start": "nx serve server",
+    "server-start": "nx serve server --verbose",
     "client-start": "nx serve client",
     "docker-start": "docker-compose up"
-  },  
+  },
   "dependencies": {
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
