@@ -94,7 +94,7 @@ export const CreateBooking = () => {
         </DrawerHeader>
        
         <DrawerBody>
-          <CreateBookingDrawer />
+           <CreateBookingDrawer onClose={handleCloseDrawer} />
       </DrawerBody>
             
       </OverlayDrawer>

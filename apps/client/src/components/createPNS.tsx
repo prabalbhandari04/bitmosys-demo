@@ -94,7 +94,7 @@ export const CreateNewPns = () => {
     // Check if required form data is available
     if (formData.serviceType && formData.rate && formData.vat) {
       const rateData = {
-        pnsId: 11, // Assuming you have a static value for pnsId
+        pnsId: 2, // Assuming you have a static value for pnsId
         name: formData.serviceType,
         hourlyRate: formData.rate,
         vat: formData.vat

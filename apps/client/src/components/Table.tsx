@@ -98,7 +98,7 @@ export const TableSort: React.FC = () => {
   });
 
   return (
-    <Table sortable aria-label="Sortable table">
+    <Table >
       <TableHeader>
         <TableRow>
         <TableHeaderCell {...headerSortProps("ServiceName")}>Service Name</TableHeaderCell>

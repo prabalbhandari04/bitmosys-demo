@@ -33,7 +33,7 @@ const TextField = styled.input`
   padding-right: 30px;
 `;
 
-export const CreateBookingDrawer = () => {
+export const CreateBookingDrawer = (onClose) => {
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -107,12 +107,13 @@ export const CreateBookingDrawer = () => {
       };
   
       dispatch(createBooking(bookingData));
-  
+      alert("Booking Created Successfully.")
       setInputValue('');
       setSelectedOption(null);
       setStartTime('');
       setEndTime('');
-      setIsDrawerOpen(false); // Close the drawer after successful booking
+      setIsDrawerOpen(false); 
+      onClose()
     } else {
       console.log('Please select a service and provide start and end time.');
     }
@@ -137,6 +138,7 @@ export const CreateBookingDrawer = () => {
       }
       dispatch(createPns(pnsData));
       dispatch(createRate(rateData));
+      alert("Product & Service Created Successfully.")
       setInputValue('');
       setIsDrawerOpen(false); // Close the drawer upon successful submission
     } else {
