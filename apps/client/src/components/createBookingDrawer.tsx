@@ -33,7 +33,7 @@ const TextField = styled.input`
   padding-right: 30px;
 `;
 
-export const CreateBookingDrawer = (onClose) => {
+export const CreateBookingDrawer = ({onClose}) => {
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -107,13 +107,12 @@ export const CreateBookingDrawer = (onClose) => {
       };
   
       dispatch(createBooking(bookingData));
-      alert("Booking Created Successfully.")
+      alert("Booking Created Successfully.");
+      onClose();
       setInputValue('');
       setSelectedOption(null);
       setStartTime('');
       setEndTime('');
-      setIsDrawerOpen(false); 
-      onClose()
     } else {
       console.log('Please select a service and provide start and end time.');
     }
